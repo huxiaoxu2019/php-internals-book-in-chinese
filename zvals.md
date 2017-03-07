@@ -1,21 +1,21 @@
 # Zvals
 
-In this chapter the “zval” data structure, which is used to represent PHP values, is introduced. We explain the concepts behind zvals and how to use them in extension code.
+本章节的主题为用来表达PHP变量的zval数据结构。我们将会围绕zvals的概念和如何在扩展开发中使用两方面来进行阐述。
 
-Contents:
+目录:
 
- - Basic structure
-  - Types and values
-  - Access macros
-  - Setting the value
- - Memory management
-  - Value- and reference-semantics
-  - Reference-counting and copy-on-write
-  - Allocating and initializing zvals
-  - Managing the refcount and zval destruction
-  - Copying zvals
-  - Separating zvals
- - Casts and operations
-  - Basic operations
-  - Comparisons
-  - Casts
+ - 基础结构
+  - 类型和值
+  - 访问宏
+  - 赋值
+ - 内存管理
+  - 值语义和引用语义
+  - 引用计数和写时复制
+  - 分配并初始化zvals
+  - 管理引用计数和zval销毁
+  - 复制zvals
+  - 分离zvals
+ - 类型转换和操作符
+  - 基础操作符
+  - 比较
+  - 类型转换
