@@ -4,9 +4,9 @@
 
 目录
  - [基础结构](https://github.com/GenialX/php-internals-book-in-chinese/blob/master/zvals/basic_structure.md)
-  - 类型和值
-  - 访问宏
-  - 赋值
+  - [类型和值](https://github.com/GenialX/php-internals-book-in-chinese/blob/master/zvals/basic_structure.md#user-content-类型和值)
+  - [访问宏](https://github.com/GenialX/php-internals-book-in-chinese/blob/master/zvals/basic_structure.md#user-content-访问宏)
+  - [赋值](https://github.com/GenialX/php-internals-book-in-chinese/blob/master/zvals/basic_structure.md#user-content-赋值)
  - 内存管理
   - 值语义和引用语义
   - 引用计数和写时复制
