@@ -1,13 +1,18 @@
 # PHP Internals Book In Chinese
-The php internals book in chinese.
+你看到的是PHP内核中文版，翻译自[PHP Internals Book](http://www.phpinternalsbook.com/index.html)。
 
-## Original Site
+## 为什么要翻译
+ - 对技术的饥渴
+ - 对英语的热爱
+ - 方便汉语作为母语的人学习交流
+
+## 官方网站
 [PHP Internals Book](http://www.phpinternalsbook.com/index.html)
 
-## About Author
+## 关于作者
 [GenialX](http://blog.ihuxu.com/about-me)
 
-## Table Of Content
+## 内容目录
  - Introduction
  - Using the PHP build system
   - Building PHP
