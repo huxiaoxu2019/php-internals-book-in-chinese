@@ -1,4 +1,4 @@
-# php-internals-book-in-chinese
+# PHP Internals Book In Chinese
 The php internals book in chinese.
 
 ## Original Site
