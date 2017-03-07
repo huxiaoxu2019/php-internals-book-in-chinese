@@ -18,7 +18,7 @@
   - Building PHP
   - Building PHP extensions
  - Creating PHP extensions
- - Zvals
+ - [Zvals](https://github.com/GenialX/php-internals-book-in-chinese/blob/master/zvals.md)
   - Basic structure
   - Memory management
   - Casts and operations
