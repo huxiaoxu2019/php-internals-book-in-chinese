@@ -41,3 +41,7 @@
 
 对象（`IS_OBJECT`）使用`zend_object_value obg`成员， 它是由一个“object handle”和一组“object handlers”构成，其中“object hanle”是一个整型ID，用于寻找当前对象实际的值；“object handlers”定义了对象如何运作。将会在<b>Classes and objects</b>章节中对PHP的类和对象系统进行阐述。
 
+资源（`IS_RESOURCE`）和对象类似，因为他们同样都存储了一个唯一ID，这个ID都是用来去寻找真实的值。ID存储在`long lval`成员中。将会在资源章节中（目前还没有完成）进行阐述。
+
+
+
