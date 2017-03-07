@@ -35,4 +35,9 @@
 
 除此之外，很关键的一点是字符串的长度信息是存储在`int`类型中，而不是`long`类型中，或者其他什么类型中。这是一个不行的历史遗留问题，因为这会导致字符串的最大长度为2147483647字节。如果在字符串变量中存储比这多的数据会导致内存溢出（这样会导致长度为负数）。
 
+剩下的三种类型在这里仅作简单的介绍，会在相应的章节中进行详细的阐述：
+
+数组使用的是`IS_ARRAY`标签，存储在`HashTable *ht`成员中。将会在<b>Hashtables</b>章节中讨论`Hashtable`结构体是如何工作的。
+
+对象（`IS_OBJECT`）使用`zend_object_value obg`成员， 它是由一个“object handle”和一组“object handlers”构成，其中“object hanle”是一个整型ID，用于寻找当前对象实际的值；“object handlers”定义了对象如何运作。将会在<b>Classes and objects</b>章节中对PHP的类和对象系统进行阐述。
 
