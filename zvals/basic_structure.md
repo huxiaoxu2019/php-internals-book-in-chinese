@@ -199,6 +199,8 @@ dump(array(1, 2, 3));       // ARRAY: hashtable=0x???
 dump(new stdClass);         // OBJECT: ???
 ```
 
+访问变量值的宏业非常好记：`Z_BVAL`获取布尔值，`Z_LVAL`获取长整型，`Z_DVAL`获取双精度。`S_STRVAL`宏会返回一个`char *`类型的字符串，然而`Z_STRLEN`会返回它的长度。可以利用`Z_RESVAL`宏获取资源ID，利用`Z_ARRVAL`获取数组的`HashTable *ht`成员。由于对象的获取会涉及到一些背景知识，所以这里不会涉及到。
+
 
 
 
