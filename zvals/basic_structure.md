@@ -229,4 +229,66 @@ PHP_FUNCTION(hello_world) {
 
 通过上面的例子，我们了解到`return_value`的生命周期会比当前的函数的声明周期要长（这很明显，否则没有人能拿到这个函数的返回值了），所以，`return_value`是不可以使用任何函数体内的临时变量。比如，如果这样写`Z_STRVAL_P(return_value) = "hello world!"`是错误的，因为这个字符串常量`"hello world"`将在函数体执行完毕后被销毁（在C中，被分配到栈中的变量都是如此 笔者注：如果你不了解C的内存分配，可以看看这篇[c语言stack(栈)和heap(堆)的使用详解](http://blog.ihuxu.com/the-usage-of-the-stack-and-heap-for-c/)）。
 
-鉴于此我们需要使用`estrdup()`来拷贝字符串。这样一来将会在推上（heap）创建一个拷贝。由于`zval`“拥有”自己的值，在`zval`销毁时一定会释放这个拷贝（笔者注：这句没懂）。
+鉴于此我们需要使用`estrdup()`来拷贝字符串。这样一来将会在推上（heap）创建一个独立的拷贝。由于`zval`“拥有”它的值，在`zval`销毁时一定会释放这个拷贝。对于其他存储了复杂值的`zval`变量也同样有效。比如：如果你给数组赋值一个`HashTable *ht`，那么`zval`将会获取所有权并在自身销毁时释放它。当使用原始的数据类型时，比如整型或者双精度，你显然不必担心了，因为他们总是进行拷贝的。
+
+最后，值得一提的是并不是所有的访问宏都会然会一个成员。比如下面的`Z_BVAL`宏：
+
+```c
+#define Z_BVAL(zval) ((zend_bool)(zval).value.lval)
+```
+
+因为这个宏里面包含了一个类型转化，所以你不能够直接这样写`Z_BVAL_P(return_value) = 1`。除了一些对象相关的宏之外，其他的访问宏都是可以进行赋值操作的。
+
+实际上，你不必担心最后一点：由于对`zval`赋值是一件非常寻常的事情，所以PHP已经提供了另外一组宏来进行赋值操作。这些宏可以同时进行类型和值的赋值操作。使用这些宏重写前面的例子：
+
+```c
+PHP_FUNCTION(hello_world) {
+    ZVAL_STRINGL(return_value, estrdup("hello world!"), strlen("hello world!"), 0);
+}
+```
+
+由于几乎每次在给`zval`赋值时需要对字符串进行单独拷贝，所以`ZVAL_STRINGL`的最后一个参数（布尔值）可以进行配置。如果是0的话，那么就使用字符串本身，如果是1的话，那么就用`estrndup()`函数进行拷贝。所以，可以将代码改写成如下的样子：
+
+```c
+PHP_FUNCTION(hello_world) {
+    ZVAL_STRINGL(return_value, "hello world!", strlen("hello world!"), 1);
+}
+```
+
+此外，我们也不必手动计算字符串的长度，可以使用`ZVAL_STRING`宏在内部进行计算（没有`L`）：
+
+```c
+PHP_FUNCTION(hello_world) {
+    ZVAL_STRING(return_value, "hello world!", 1);
+}
+```
+
+如果你已经知道该字符串的长度（因为有可能以某种方式传给了你），你应该总是使用`ZVAL_STRINGL`宏来使用它，因为这样可以保证二进制安全。如果你不知道长度（或者你知道字符串不包含NUL字节，通常是在字面量的情况下），你可以使用`ZVAL_STRING`。
+
+除了`ZVAL_STRING(L)`，还有几个用来赋值的宏，如下：
+
+```c
+ZVAL_NULL(return_value);
+
+ZVAL_BOOL(return_value, 0);
+ZVAL_BOOL(return_value, 1);
+/* or better */
+ZVAL_FALSE(return_value);
+ZVAL_TRUE(return_value);
+
+ZVAL_LONG(return_value, 42);
+ZVAL_DOUBLE(return_value, 4.2);
+ZVAL_RESOURCE(return_value, resource_id);
+
+ZVAL_EMPTY_STRING(return_value);
+/* = ZVAL_STRING(return_value, "", 1); */
+
+ZVAL_STRING(return_value, "string", 1);
+/* = ZVAL_STRING(return_value, estrdup("string"), 0); */
+
+ZVAL_STRINGL(return_value, "nul\0string", 10, 1);
+/* = ZVAL_STRINGL(return_value, estrndup("nul\0string", 10), 10, 0); */
+```
+
+指的注意的是这些宏可以进行赋值，但是不会销毁任何值，其中这些值有可能`zval`之前持有过。对于`return_value`变量来说这无关紧要，因为它在初始化时被赋值为`IS_NULL`类型（不需要被释放），但是在其他情况下，你需要在一开始就销毁这些老的值，我们将会在后面的章节中介绍如何操作。
+
