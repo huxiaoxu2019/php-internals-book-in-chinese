@@ -119,4 +119,16 @@ if (Z_TYPE_P(zv_ptr) == IS_LONG) {
 } else /* ... */
 ```
 
-上面代码使用了`Z_TYPE_P()`宏来获取类型，`Z_LVAL_P`会返回一个long类型的值。所有这些访问的宏都会以不定个数的`_P`结尾，也许是`_P`，也许是`_PP`，也有可能没有。这取决于你传递的参数是`zval`，`zval*`还是`zval**`：
+上面代码使用了`Z_TYPE_P()`宏来获取类型，`Z_LVAL_P`会返回一个long类型的值。所有这些访问的宏都会以不定个数的`_P`结尾，也许是`_P`，也许是`_PP`，也有可能没有。这取决于你传递的参数是`zval`，`zval*`还是`zval**`类型的：
+
+```c
+zval zv;
+zval *zv_ptr;
+zval **zv_ptr_ptr;
+zval ***zv_ptr_ptr_ptr;
+
+Z_TYPE(zv);                 // = zv.type
+Z_TYPE_P(zv_ptr);           // = zv_ptr->type
+Z_TYPE_PP(zv_ptr_ptr);      // = (*zv_ptr_ptr)->type
+Z_TYPE_PP(*zv_ptr_ptr_ptr); // = (**zv_ptr_ptr_ptr)->type
+```
