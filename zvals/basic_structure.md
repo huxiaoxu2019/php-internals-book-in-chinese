@@ -111,4 +111,12 @@ if (zv_ptr->type == IS_LONG) {
 
 尽管上面的代码会达到预期效果，但是这一种非常规的写法。因为它直接使用了结构体的成员属性，并没有使用一些宏来访问。
 
+```c
+zval *zv_ptr = /* ... */;
 
+if (Z_TYPE_P(zv_ptr) == IS_LONG) {
+    php_printf("Zval is a long with value %ld\n", Z_LVAL_P(zv_ptr));
+} else /* ... */
+```
+
+上面代码使用了`Z_TYPE_P()`宏来获取类型，`Z_LVAL_P`会返回一个long类型的值。所有这些访问的宏都会以不定个数的`_P`结尾，也许是`_P`，也许是`_PP`，也有可能没有。这取决于你传递的参数是`zval`，`zval*`还是`zval**`：
