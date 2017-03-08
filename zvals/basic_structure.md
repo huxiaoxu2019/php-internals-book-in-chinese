@@ -55,32 +55,32 @@
         <td>none</td>
     </tr>
     <tr>
-        <td></td>
-        <td></td>
+        <td>`IS_BOOL`</td>
+        <td>`long lval`</td>
     </tr>
     <tr>
-        <td></td>
-        <td></td>
+        <td>`IS_LONG`</td>
+        <td>`long lval`</td>
     </tr>
     <tr>
-        <td></td>
-        <td></td>
+        <td>`IS_DOUBLE`</td>
+        <td>`double dval`</td>
     </tr>
     <tr>
-        <td></td>
-        <td></td>
+        <td>`IS_STRING`</td>
+        <td>`struct { char *val; int len; } str`</td>
     </tr>
     <tr>
-        <td></td>
-        <td></td>
+        <td>`IS_ARRAY`</td>
+        <td>`Hashtable *ht`</td>
     </tr>
     <tr>
-        <td></td>
-        <td></td>
+        <td>`IS_OBJECT`</td>
+        <td>`zend_object_value obj`</td>
     </tr>
     <tr>
-        <td></td>
-        <td></td>
+        <td>`IS_RESOURCE`</td>
+        <td>`long lval`</td>
     </tr>
 </table>
 
