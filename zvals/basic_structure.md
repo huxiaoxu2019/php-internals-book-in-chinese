@@ -203,5 +203,23 @@ dump(new stdClass);         // OBJECT: ???
 
 当你想访问zval的值是，你需要总是使用宏来获取，而不能直接使用它的成员属性。因为这样维护了一层抽象的接口，并且能够提高代码可读性：举个例子来说，如果你直接使用`lval`成员来访问值的话，对于看代码的人来说无法确定你是在获取一个布尔值，长整形值还是一个资源ID。所以，如果你使用了`Z_BVAL`，`Z_LVAL`和`Z_RESVAL`宏的话，那么就不会有歧义了。此外还有一个原因就是为了兼容后续PHP版本对`zval`结构体内部的调整。
 
+## 赋值
 
+前文中提到的大部分宏可以用来访问`zval`结构体的成员，因此你可以使用它们来进行读取和赋值操作。举个例子，如下面的输出"hello world!"的函数：
+
+```c
+PHP_FUNCTION(hello_world) {
+    Z_TYPE_P(return_value) = IS_STRING;
+    Z_STRVAL_P(return_value) = estrdup("hello world!");
+    Z_STRLEN_P(return_value) = strlen("hello world!");
+};
+
+/* ... */
+    PHP_FE(hello_world, NULL)
+/* ... */
+```
+
+执行`php -r "echo hello_world();"后，会输出`hello world!`到终端中。
+
+在上面的例子中，我们队`return_value`进行了赋值，它是`PHP_FUNCTION`宏中的一个`zval*`类型的变量。在后面的章节中我们会详细的讨论这个变量，现在只需明白这个变量就是函数的返回值就够了。默认情况下，它是`IS_NULL`类型的。
 
