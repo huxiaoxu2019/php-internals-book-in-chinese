@@ -51,36 +51,36 @@
         <th>存储位置</th>
     </tr> 
     <tr>
-        <td>`IS_NULL`</td>
+        <td>IS_NULL</td>
         <td>none</td>
     </tr>
     <tr>
-        <td>`IS_BOOL`</td>
-        <td>`long lval`</td>
+        <td>IS_BOOL</td>
+        <td>long lval</td>
     </tr>
     <tr>
-        <td>`IS_LONG`</td>
-        <td>`long lval`</td>
+        <td>IS_LONG</td>
+        <td>long lval</td>
     </tr>
     <tr>
-        <td>`IS_DOUBLE`</td>
-        <td>`double dval`</td>
+        <td>IS_DOUBLE</td>
+        <td>double dval</td>
     </tr>
     <tr>
-        <td>`IS_STRING`</td>
-        <td>`struct { char *val; int len; } str`</td>
+        <td>IS_STRING</td>
+        <td>struct { char *val; int len; } str</td>
     </tr>
     <tr>
-        <td>`IS_ARRAY`</td>
-        <td>`Hashtable *ht`</td>
+        <td>IS_ARRAY</td>
+        <td>Hashtable *ht</td>
     </tr>
     <tr>
-        <td>`IS_OBJECT`</td>
-        <td>`zend_object_value obj`</td>
+        <td>IS_OBJECT</td>
+        <td>zend_object_value obj</td>
     </tr>
     <tr>
-        <td>`IS_RESOURCE`</td>
-        <td>`long lval`</td>
+        <td>IS_RESOURCE</td>
+        <td>long lval</td>
     </tr>
 </table>
 
