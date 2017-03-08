@@ -132,3 +132,74 @@ Z_TYPE_P(zv_ptr);           // = zv_ptr->type
 Z_TYPE_PP(zv_ptr_ptr);      // = (*zv_ptr_ptr)->type
 Z_TYPE_PP(*zv_ptr_ptr_ptr); // = (**zv_ptr_ptr_ptr)->type
 ```
+
+通常来说`P`的个数和`*`的个数应该是一致的。但是最多只能到`zval**`，也就是说没有能够处理`zval***`类型的特殊宏，因为这种情况在实践中非常少见（你仅需要使用`*`运算符来取消引用）。
+
+针对其它类型，同样也会有和`Z_LVAL`类似的访问值的宏。我们通过创建如下一个打印zval值的函数来说明如何使用这些宏：
+
+```c
+PHP_FUNCTION(dump)
+{
+    zval *zv_ptr;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &zv_ptr) == FAILURE) {
+        return;
+    }
+
+    switch (Z_TYPE_P(zv_ptr)) {
+        case IS_NULL:
+            php_printf("NULL: null\n");
+            break;
+        case IS_BOOL:
+            if (Z_BVAL_P(zv_ptr)) {
+                php_printf("BOOL: true\n");
+            } else {
+                php_printf("BOOL: false\n");
+            }
+            break;
+        case IS_LONG:
+            php_printf("LONG: %ld\n", Z_LVAL_P(zv_ptr));
+            break;
+        case IS_DOUBLE:
+            php_printf("DOUBLE: %g\n", Z_DVAL_P(zv_ptr));
+            break;
+        case IS_STRING:
+            php_printf("STRING: value=\"");
+            PHPWRITE(Z_STRVAL_P(zv_ptr), Z_STRLEN_P(zv_ptr));
+            php_printf("\", length=%d\n", Z_STRLEN_P(zv_ptr));
+            break;
+        case IS_RESOURCE:
+            php_printf("RESOURCE: id=%ld\n", Z_RESVAL_P(zv_ptr));
+            break;
+        case IS_ARRAY:
+            php_printf("ARRAY: hashtable=%p\n", Z_ARRVAL_P(zv_ptr));
+            break;
+        case IS_OBJECT:
+            php_printf("OBJECT: ???\n");
+            break;
+    }
+}
+
+const zend_function_entry funcs[] = {
+    PHP_FE(dump, NULL)
+    PHP_FE_END
+};
+```
+
+执行结果如下：
+```c
+dump(null);                 // NULL: null
+dump(true);                 // BOOL: true
+dump(false);                // BOOL: false
+dump(42);                   // LONG: 42
+dump(4.2);                  // DOUBLE: 4.2
+dump("foo");                // STRING: value="foo", length=3
+dump(fopen(__FILE__, "r")); // RESOURCE: id=???
+dump(array(1, 2, 3));       // ARRAY: hashtable=0x???
+dump(new stdClass);         // OBJECT: ???
+```
+
+
+
+
+
