@@ -84,3 +84,19 @@
     </tr>
 </table>
 
+## 访问宏
+
+现在我们看看`zval`的真实面目吧：
+
+```c
+typedef struct _zval_struct {
+    zvalue_value value;
+    zend_uint refcount__gc;
+    zend_uchar type;
+    zend_uchar is_ref__gc;
+} zval;
+```
+
+正如前面提到的，zval结构体中包含了存储值和类型两个成员。其中值是存储在前文介绍过的`zvalue_value`联合体中，类型是存储在一个`zend_uchar`的类型成员中。此外，该结构体还包括两个以`__gc`结尾的属性，这两个属性是用于PHP的垃圾回收机制。本章节不过多介绍，将会在后面章节做具体讲解。
+
+
