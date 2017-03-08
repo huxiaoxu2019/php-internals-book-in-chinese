@@ -99,4 +99,16 @@ typedef struct _zval_struct {
 
 正如前面提到的，zval结构体中包含了存储值和类型两个成员。其中值是存储在前文介绍过的`zvalue_value`联合体中，类型是存储在一个`zend_uchar`的类型成员中。此外，该结构体还包括两个以`__gc`结尾的属性，这两个属性是用于PHP的垃圾回收机制。本章节不过多介绍，将会在后面章节做具体讲解。
 
+在了解了`zval`结构体后，你可以这样使用它：
+
+```c
+zval *zv_ptr = /* ... get zval from somewhere */;
+
+if (zv_ptr->type == IS_LONG) {
+    php_printf("Zval is a long with value %ld\n", zv_ptr->value.lval);
+} else /* ... handle other types */
+```
+
+尽管上面的代码会达到预期效果，但是这一种非常规的写法。因为它直接使用了结构体的成员属性，并没有使用一些宏来访问。
+
 
