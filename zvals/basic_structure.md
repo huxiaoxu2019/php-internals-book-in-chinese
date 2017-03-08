@@ -46,5 +46,41 @@
 为了有个形象的概念，下表给出了所有可用类型的标签和相应的值的存储位置：
 
 <table>
+    <tr>
+        <th>类型标签</th>
+        <th>存储位置</th>
+    </tr> 
+    <tr>
+        <td>`IS_NULL`</td>
+        <td>none</td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+    </tr>
 </table>
 
