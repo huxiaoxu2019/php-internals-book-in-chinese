@@ -210,3 +210,19 @@ INIT_ZVAL(*zv_ptr);
 /* zv_ptr has type=IS_NULL here */
 ```
 
+`INIT_PZVAL`接受一个`zval*`类型的值（所以会有一个`P`），，然而`INIT_ZVAL`接受一个`zval`类型的。当将`zval*`类型的值传给后面的宏时，首先要解除引用。
+
+因为一步进行`zval`的分配和初始化是非常频繁的，所以有两个宏来一步完成这些操作：
+
+```c
+zval *zv_ptr;
+MAKE_STD_ZVAL(zv_ptr);
+/* zv_ptr has garbage type+value here */
+
+zval *zv_ptr;
+ALLOC_INIT_ZVAL(zv_ptr);
+/* zv_ptr has type=IS_NULL here */
+```
+
+`MAKE_STD_ZVAL()`宏使用了`INIT_PZVAL()`宏进行初始化和分配，然而`ALLOC_INIT_ZVAL()`宏使用了`INIT_ZVAL()`宏。
+
