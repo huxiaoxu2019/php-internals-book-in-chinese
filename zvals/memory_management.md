@@ -155,5 +155,58 @@ $d++;     // $a = $b = zval_1(value=1, refcount=2, is_ref=0)
 
 正如你看到的那样，在使用`&`操作符引用一个`is_ref=0`且`refcount>1`的`zval`类型的变量时，需要进行拷贝。同样地在传值的上下文中，试着去使用一个`is_ref=1`且`refcount>1`的变量时也需要进行拷贝。所以使用PHP的引用通常会降低代码的效率：几乎PHP中所有的函数都使用传值语义，所以当传递给函数一个`is_ref=1`的`zval`变量时将要触发拷贝。
 
+## 分配并初始化zvals
 
+目前为止你应该对`zval`的内存管理有所了解了，接下来我们来看看如何去实践。首先我们讨论下`zval`的分配：
+
+```c
+zval *zv_ptr;
+ALLOC_ZVAL(zv_ptr);
+```
+
+这段代码分配了一个`zval`类型的变量，但是并没有对其成员进行初始化。这里有很多用来分配永驻的`zval`变量的宏，直到请求结束也不会被销毁。
+
+```c
+zval *zv_ptr;
+ALLOC_PERMANENT_ZVAL(zv_ptr);
+```
+
+这两个宏之间的差别在于前者使用了`emalloc()`，后者使用了`malloc()`函数。还有关键的一点是直接尝试去分配`zval`变量并不起作用：
+
+```c
+/* This code is WRONG */
+zval *zv_ptr = emalloc()sizeof(zval);
+```
+
+原因是垃圾回收器需要在`zval`变量中存储一些额外的信息，所以实际上需要被分配的结构体不是`zval`而是`zval_gc_info`：
+
+```c
+typedef struct _zval_gc_info {
+    zval z;
+    union {
+        gc_root_buffer       *buffered;
+        struct _zval_gc_info *next;
+    } u;
+} zval_gc_info;
+```
+
+这个`ALLOC_*`宏会分配一个`zval_gc_info`结构体，并初始化一些额外的成员，但是这个值可以直接透明地当成`zval`类型的变量使用(因为这个结构体的第一个成员就是`zval`类型的变量)。
+
+在分配`zval`后，需要进行初始化。有两种方式：第一种就是使用`INIT_PZVAL`，它会对进行相应的赋值`refcount=1`，`is_ref=0`，但是不会对存储值的成员赋值：
+
+```c
+zval *zv_ptr;
+ALLOC_ZVAL(zv_ptr);
+INIT_PZVAL(zv_ptr);
+/* zv_ptr has garbage type+value here */
+```
+
+第二种是`INIT_ZVAL`，它同样会进行赋值操作，`refcount=1`,`is_ref=0`，但是会将其类型设置为`IS_NULL`类型。
+
+```c
+zval *zv_ptr;
+ALLOC_ZVAL(zv_ptr);
+INIT_ZVAL(*zv_ptr);
+/* zv_ptr has type=IS_NULL here */
+```
 
