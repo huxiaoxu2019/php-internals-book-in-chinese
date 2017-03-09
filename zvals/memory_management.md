@@ -226,3 +226,28 @@ ALLOC_INIT_ZVAL(zv_ptr);
 
 `MAKE_STD_ZVAL()`宏使用了`INIT_PZVAL()`宏进行初始化和分配，然而`ALLOC_INIT_ZVAL()`宏使用了`INIT_ZVAL()`宏。
 
+## 管理引用计数和zval销毁
+
+在你分配并初始化`zval`后，就可以使用前文介绍的引用计数机制了。PHP提供了一些用于管理`refcount`的宏：
+
+```c
+Z_REFCOUNT_P(zv_ptr)      /* Get refcount */
+Z_ADDREF_P(zv_ptr)        /* Increment refcount */
+Z_DELREF_P(zv_ptr)        /* Decrement refcount */
+Z_SET_REFCOUNT(zv_ptr, 1) /* Set refcount to some particular value (here 1) */
+```
+
+和`Z_`开头的宏类似，同样会有不同数量的`_P`后缀，没有，一个或者两个，分别用于处理`zval`，`zval*`或者`zval**`类型的变量。
+
+`Z_ADDREF_P()`将是你使用频繁的宏。举个简单的例子：
+
+```c
+zval *zv_ptr;
+MAKE_STD_ZVAL(zv_ptr);
+ZVAL_LONG(zv_ptr, 42);
+
+add_index_zval(some_array, 0, zv_ptr);
+add_assoc_zval(some_array, "num", zv_ptr);
+Z_ADDREF_P(zv_ptr);
+```
+
