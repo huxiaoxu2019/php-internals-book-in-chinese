@@ -6,7 +6,7 @@
 ## 值语义和引用语义
 在PHP中，所有变量都是值语义的，除非显示地使用引用。也就是说，无论是将一个变量传给一个函数还是给另一个变量赋值，这总是通过创建一个独立的拷贝实现的。举个例子：
 
-```c
+```php
 <?php
 
 $a = 1;
@@ -29,7 +29,7 @@ var_dump($c); // int(1)
 
 上面的例子显然说明了记住这一特性是非常关键的。这一特性同样适用于对象。
 
-```c
+```php
 <?php
 
 $obj = (object) ['value' => 1];
@@ -65,7 +65,7 @@ var_dump($obj); // int(100)
 
 为了更好的理解，举个例子：
 
-```c
+```php
 <?php
 
 $a = 1;    // $a =           zval_1(value=1, refcount=1)
@@ -86,7 +86,7 @@ unset($c); // zval_1 is destroyed, because refcount=0
 
 当循环引用时上述的方法将无法正常运作：
 
-```c
+```php
 <?php
 
 $a = []; // $a = zval_1(value=[], refcount=1)
@@ -121,7 +121,7 @@ unset($b);  //      zval_1(value=[0 => zval_2], refcount=1)
 
 如果`zval`的`is_ref`值为1，那么就说明这个`zval`在修改前不应该进行拷贝。而是应该直接修改它的值：
 
-```c
+```php
 <?php
 
 $a = 1;   // $a =      zval_1(value=1, refcount=1, is_ref=0)
@@ -134,7 +134,7 @@ $b++;     // $a = $b = zval_1(value=2, refcount=2, is_ref=1)
 
 在上面的例子中，在`zval`类型的变量`$a`被引用之前，它的refcount值为1。现在我们来看一个非常相似的例子，不同的是refcount的值大于1：
 
-```c
+```php
 <?php
 
 $a = 1;   // $a =           zval_1(value=1, refcount=1, is_ref=0)
