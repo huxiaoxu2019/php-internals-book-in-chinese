@@ -255,3 +255,43 @@ Z_ADDREF_P(zv_ptr);
 
 另外一个与之对应的宏`Z_DELPREF_P()`很少用得到：通常来说仅仅减少`refcount`的值是不够的，因为你要去判断`refcount`是否等于0的情况。因为当`refcount`等于0的情况下，需要销毁并释放`zval`变量。
 
+```c
+Z_DELREF_P(zv_ptr);
+if (Z_REFCOUNT_P(zv_ptr) == 0) {
+    zval_dtor(zv_ptr);
+    efree(zv_ptr);
+}
+```
+`zval_dtor()`宏接收一个`zval*`类型的参数并销毁它的值：如果是字符串，那么就销毁这个字符串，如果是数组，那么就销毁并释放HashTable，如果是对象或是资源，那么就将其refcount值递减（这样会导致销毁和释放）。
+
+通常来说不会使用上述代码来检查refcount，可以使用这个`zval_ptr_dtor()`宏：
+
+```c
+zval_ptr_dtor(&zv_ptr);
+```
+
+这个宏接收一个`zval**`类型的参数（历史原因，他也接收`zval*`类型的参数），递减refcount同时检查它是否需要销毁和释放。但并不想我们上面手动写的代码那样，它也包含了对循环垃圾回收的支持。下面是它相应的一部分实现代码：
+
+```c
+static zend_always_inline void i_zval_ptr_dtor(zval *zval_ptr ZEND_FILE_LINE_DC TSRMLS_DC)
+{
+    if (!Z_DELREF_P(zval_ptr)) {
+        ZEND_ASSERT(zval_ptr != &EG(uninitialized_zval));
+        GC_REMOVE_ZVAL_FROM_BUFFER(zval_ptr);
+        zval_dtor(zval_ptr);
+        efree_rel(zval_ptr);
+    } else {
+        if (Z_REFCOUNT_P(zval_ptr) == 1) {
+            Z_UNSET_ISREF_P(zval_ptr);
+        }
+
+        GC_ZVAL_CHECK_POSSIBLE_ROOT(zval_ptr);
+    }
+}
+```
+
+`Z_DELREF_P()`宏返回了它递减后的refcount值，所以`!Z_DELREF_P(zval_ptr)`和`Z_DELPREF_P(zval_ptr); Z_REFCOUNT_P(zval_ptr) == 0;`写法等同。
+
+除了执行了预期的`zval_dtor()`和`efree()`操作外，同时也调用了两个形如`GC_*`的宏处理循环垃圾回收，并断言`&EG(uninitialized_zval))`永远不被释放（这个是引擎使用的魔术zval）。
+
+此外，如果这个`zval`是有一处引用，那么会进行`is_ref=0`的设置。在这种情况下，如果`is_ref=1`是没有意义的，因为PHP的引用只有在zval变量被两个或者更多的持有者共享时才有意义。
