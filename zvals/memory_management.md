@@ -295,3 +295,18 @@ static zend_always_inline void i_zval_ptr_dtor(zval *zval_ptr ZEND_FILE_LINE_DC 
 除了执行了预期的`zval_dtor()`和`efree()`操作外，同时也调用了两个形如`GC_*`的宏处理循环垃圾回收，并断言`&EG(uninitialized_zval))`永远不被释放（这个是引擎使用的魔术zval）。
 
 此外，如果这个`zval`是有一处引用，那么会进行`is_ref=0`的设置。在这种情况下，如果`is_ref=1`是没有意义的，因为PHP的引用只有在zval变量被两个或者更多的持有者共享时才有意义。
+
+对于这些宏使用的一些提示：你不应该使用`Z_DELREF_P()`宏(它仅适用于在你确定`zval`既不会被释放，也不会是一个可能的根圆的情况)。取而代之的是你应该使用`zval_ptr_dtor()`宏来递减`refcount`。`zval_dtor()`宏是特别为临时的，栈存储的`zvals`设计的：
+
+```c
+zval zv;
+INIT_ZVAL(zv);
+
+/* Do something with zv here */
+
+zval_dtor(&zv);
+```
+
+分配于栈上的临时`zval`不能被分享的原因在于它将会在其所在语句块结束时被释放掉，所以它不能使用引用计数，可以无区别地使用`zval_dtor()`宏来销毁。
+
+
