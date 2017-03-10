@@ -251,3 +251,7 @@ add_assoc_zval(some_array, "num", zv_ptr);
 Z_ADDREF_P(zv_ptr);
 ```
 
+上述代码将一个存有整型数字42的`zval`变量分别以索引`0`和`'num'`加入到一个数组内。所以这个`zval`变量被两处地方使用。在使用`MAKE_STD_ZVAL()`宏分配并初始化后，`zval`变量的`refcount`初始值为1。为了在两处使用这个`zval`变量需要`refcount`的值为2，所以需要使用`Z_ADDREF_P()`宏来操作。
+
+另外一个与之对应的宏`Z_DELPREF_P()`很少用得到：通常来说仅仅减少`refcount`的值是不够的，因为你要去判断`refcount`是否等于0的情况。因为当`refcount`等于0的情况下，需要销毁并释放`zval`变量。
+
