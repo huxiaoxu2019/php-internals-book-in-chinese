@@ -345,5 +345,19 @@ ALLOC_ZVAL(zv_dest);
 MAKE_COPY_ZVAL(&zv_src, zv_dest);
 ```
 
+这个宏有一些怪异（tricky signature），因为参数的位置进行了调换（目标地址是第二个参数，而不是第一个了），同时需要原始变量是一个`zval**`类型的。再次声明这是一个历史遗留问题，并没有任何技术上的意义。
 
+除了这些基础的复制宏以外，还有一些更复杂的。其中最重要的就是`ZVAL_ZVAL`，在函数中返回`zval`的场景下使用频率非常高。如下：
+
+```c
+ZVAL_ZVAL(zv_dest, zv_src, copy, dtor)
+```
+
+其中`copy`参数指定是否需要调用`zval_copy_ctor()`宏来对目标`zval`进行操作，`dtor`参数指定是否需要调用`zval_ptr_dtor()`宏来对原始`zval`进行操作。我们来看看这所有的四种可能性组合，并分析下其相应的行为。最简单的情况就是同时将`copy`和`dtor`设置为0：
+
+```c
+ZVAL_ZVAL(zv_dest, zv_src, 0, 0);
+/* equivalent to: */
+ZVAL_COPY_VALUE(zv_dest, zv_src)
+```
 
