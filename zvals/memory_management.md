@@ -309,4 +309,41 @@ zval_dtor(&zv);
 
 分配于栈上的临时`zval`不能被分享的原因在于它将会在其所在语句块结束时被释放掉，所以它不能使用引用计数，可以无区别地使用`zval_dtor()`宏来销毁。
 
+## 复制zvals
+
+虽然写时复制机制能够节省大量的zval副本，但是它们也需要在一定情况下触发，比如：当你想要改变`zval`的值或者把它传递给另一个存储位置时。
+
+PHP提供了大量在不同使用场景下的复制宏，最简单的就是`ZVAL_COPY_VALUE()`，它仅仅拷贝`value`和`type`两个`zval`的成员：
+
+```c
+zval *zv_src;
+MAKE_STD_ZVAL(zv_src);
+ZVAL_STRING(zv_src, "test", 1);
+
+zval *zv_dest;
+ALLOC_ZVAL(zv_dest);
+ZVAL_COPY_VALUE(zv_dest, zv_src);
+```
+
+此时`zv_dest`会拥有和`zv_src`一样的类型和值。注意这里的“相同的值”指的是它们持有了同一个字符串变量（`char *`），即如果`zv_src`变量销毁了，那么其持有的字符串也将会被释放，同时`zv_dest`将会留下一个指向被释放的字符串的悬空指针（dangling pointer）。为了避免这种情况，可以使用`zval_copy_ctor()`宏。
+
+```c
+zval *zv_dest;
+ALLOC_ZVAL(zv_dest);
+ZVAL_COPY_VALUE(zv_dest, zv_src);
+zval_copy_ctor(zv_dest);
+```
+
+`zval_copy_ctor()`宏会对`zval`进行一个完全的拷贝，也就是说如果是一个字符串，那么`char*`将会被拷贝，如果是一个数组，那么`HashTable*`将会被拷贝，如果是一个对象或者资源，那么他们的内部引用计数将会自增。
+
+目前为止唯一一件未提及的事情就是`refcount`和`is_ref`标签的初始化问题。这些事情可以使用`INIT_PZVAL()`宏来搞定，也可以使用`MAKE_STD_ZVAL()`宏。另外一种方式就是使用`INIT_PZVAL_COPY()`来代替`ZVAL_COPY_VALUE()`，`ZVAL_COPY_VALUE()`会在拷贝时对`refcount`和`is_ref`进行初始化。
+
+由于`INIT_PZVAL_COPY()`和`zval_copy_ctor()`的组合使用非常频繁，因此两者已被融合在`MAKE_COPY_VALUE()`宏中：
+```c
+zval *zv_dest;
+ALLOC_ZVAL(zv_dest);
+MAKE_COPY_ZVAL(&zv_src, zv_dest);
+```
+
+
 
