@@ -361,3 +361,35 @@ ZVAL_ZVAL(zv_dest, zv_src, 0, 0);
 ZVAL_COPY_VALUE(zv_dest, zv_src)
 ```
 
+上述例子中`ZVAL_ZVAL()`可以看成一个简单的`ZVAL_COPY_VALUE()`调用。因为使用0，0作为参数并没有实际意义。一种更有用的变形：copy=1，dtor=0：
+
+```c
+ZVAL_ZVAL(zv_dest, zv_src, 1, 0);
+/* equivalent to: */
+ZVAL_COPY_VALUE(zv_dest, zv_src);
+zval_copy_ctor(&zv_src);
+```
+
+这基本上是一种类似于`MAKE_COPY_ZVAL()`的正常zval赋值，只是没有`INIT_PZVAL()`这一步。这在将其拷贝到已经初始化的`zvals`时非常有用。此外，设置dtor=1仅增加`zval_ptr_dtor()`调用：
+
+```c
+ZVAL_ZVAL(zv_dest, zv_src, 1, 1);
+/* equivalent to: */
+ZVAL_COPY_VALUE(zv_dest, zv_src);
+zval_copy_ctor(zv_dest);
+zval_ptr_dtor(&zv_src);
+```
+
+最有趣的场景是copy=0，dtor=1的组合：
+
+```c
+ZVAL_ZVAL(zv_dest, zv_src, 0, 1);
+/* equivalent to: */
+ZVAL_COPY_VALUE(zv_dest, zv_src);
+ZVAL_NULL(zv_src);
+zval_ptr_dtor(&zv_src);
+```
+
+这构成了一种`zval`的“运动” - 在不调用复制构造器的情况下，将`zv_src`的值转移到`zv_dest`变量中。当`zv_src`的引用计数refcount=1时，这种`zval`的“运动”就会发生。如果`zv_src`的引用计数refcount=1，那么在调用`zval_ptr_dtor()`后`zv_src`会被销毁掉。如果`refcount`的值大于1，那么`zval`将会保留一个`NULL`值。
+
+还有另外两种用来复制`zval`的宏：`COPY_PZVAL_TO_ZVAL()`和`REPLACE_ZVAL_VALUE()`。很少会用到，所以不在此讨论了。
