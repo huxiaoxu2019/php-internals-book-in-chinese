@@ -396,4 +396,25 @@ zval_ptr_dtor(&zv_src);
 
 ## 分离zvals
 
-上述提到的一些宏主要用在拷贝一个`zval`到另一个储存地址的场景。一个典型的例子就是拷贝一个值到`return_value` zval中。还有另一系列的宏“zval 分离”，主用在写时复制的上下文场景中。
+上述提到的一些宏主要用在拷贝一个`zval`到另一个储存地址的场景。一个典型的例子就是拷贝一个值到`return_value` zval中。还有另一系列的宏“zval 分离”，主用在写时复制的上下文场景中。下面的例子利于理解其功能 ：
+
+```c
+#define SEPARATE_ZVAL(ppzv)                     \
+    do {                                        \
+        if (Z_REFCOUNT_PP((ppzv)) > 1) {        \
+            zval *new_zv;                       \
+            Z_DELREF_PP(ppzv);                  \
+            ALLOC_ZVAL(new_zv);                 \
+            INIT_PZVAL_COPY(new_zv, *(ppzv));   \
+            *(ppzv) = new_zv;                   \
+            zval_copy_ctor(new_zv);             \
+        }                                       \
+    } while (0)
+```
+
+如果引用计数（`refcount`）为1，那么`SEPARATE_ZVAL()`将不会有任何操作。如果引用计数大于1，那么它会从老的`zval`中移除一个引用计数，将它拷贝到一个新的`zval`中，并将新的`zval`赋值给`*ppzv`。注意改宏接受一个`zval**`类型的值，并会将`zval*`所指向的内容更改到一个新的内容。
+
+
+
+
+
