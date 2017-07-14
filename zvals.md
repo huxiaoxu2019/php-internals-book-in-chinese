@@ -13,7 +13,7 @@
    - [分配并初始化zvals](https://github.com/GenialX/php-internals-book-in-chinese/blob/master/zvals/memory_management.md#user-content-分配并初始化zvals)
    - [管理引用计数和zval销毁](https://github.com/GenialX/php-internals-book-in-chinese/blob/master/zvals/memory_management.md#user-content-管理引用计数和zval销毁)
    - [复制zvals](https://github.com/GenialX/php-internals-book-in-chinese/blob/master/zvals/memory_management.md#user-content-复制zvals)
-   - 分离zvals
+   - [分离zvals](https://github.com/GenialX/php-internals-book-in-chinese/blob/master/zvals/memory_management.md#user-content-分离zvals)
  - 类型转换和操作符
    - 基础操作符
    - 比较
