@@ -393,3 +393,7 @@ zval_ptr_dtor(&zv_src);
 这构成了一种`zval`的“运动” - 在不调用复制构造器的情况下，将`zv_src`的值转移到`zv_dest`变量中。当`zv_src`的引用计数refcount=1时，这种`zval`的“运动”就会发生。如果`zv_src`的引用计数refcount=1，那么在调用`zval_ptr_dtor()`后`zv_src`会被销毁掉。如果`refcount`的值大于1，那么`zval`将会保留一个`NULL`值。
 
 还有另外两种用来复制`zval`的宏：`COPY_PZVAL_TO_ZVAL()`和`REPLACE_ZVAL_VALUE()`。很少会用到，所以不在此讨论了。
+
+## 分离zvals
+
+上述提到的一些宏主要用在拷贝一个`zval`到另一个储存地址的场景。一个典型的例子就是拷贝一个值到`return_value` zval中。还有另一系列的宏“zval 分离”，主用在写时复制的上下文场景中。
