@@ -430,4 +430,20 @@ Z_SET_ISREF_TO_P(zv_ptr, 1) /* Same as Z_SET_ISREF_P(zv_ptr) */
 Z_SET_ISREF_TO_P(zv_ptr, 0) /* Same as Z_UNSET_ISREF_P(zv_ptr) */
 ```
 
+同样的，这些宏有着不同的形式，没有后缀，`_P`后缀，`_PP`后缀，分别接收`zval`，`zval*`和`zval**`类型的值。此外，有一个老的宏`PZVAL_IS_REF()`是`Z_ISREF_P()`宏的别名。
+
+使用如下PHP提供的另外两种形式的`SEPARATE_ZVAL()`宏：
+
+```c
+#define SEPARATE_ZVAL_IF_NOT_REF(ppzv)      \
+    if (!PZVAL_IS_REF(*ppzv)) {             \
+        SEPARATE_ZVAL(ppzv);                \
+    }
+
+#define SEPARATE_ZVAL_TO_MAKE_IS_REF(ppzv)  \
+    if (!PZVAL_IS_REF(*ppzv)) {             \
+        SEPARATE_ZVAL(ppzv);                \
+        Z_SET_ISREF_PP((ppzv));             \
+    }
+``
 
