@@ -416,5 +416,18 @@ zval_ptr_dtor(&zv_src);
 
 实际操作是怎么样的呢？假设，你想修改一个数组下标所对应的值，比如`$array[42]`。为了进行修改操作，你首先要拿到指向存储`zval*`值的指针`zval**`（译者注：这里面`zval*`指的是前面提到的`$array`变量，即代码中的ppzv）。由于引用计数的关系，你不能直接修改它（因为它可能在被其他地方所共享着），而是需要先分离。分离操作中，如果引用计数是1的话，那么就会使用当前“老的`zval`"，否则会进行赋值操作。在后者的情况中（引用计数大于1的场景），新的`zval`会被赋值给`*ppzv`，在这种场景下，`*ppzv`就是数组`$array`的存储地址。
 
+在这种场景下，通过`MAKE_COPY_ZVAL()`进行简单的赋值操作是不够的。因为复制的`zval`实际不是存储在数组中的`zval`（译者注：没读懂）。
+
+这`zval`的`is_ref=1`场景下，在修改`zval`之前直接使用`SEPARATE_ZVAL()`还不够。这种场景并不会发生分离的操作。为了解决这个场景，我们先来看看处理`is_ref`标志的PHP宏：
+
+```c
+Z_ISREF_P(zv_ptr)           /* Get if zval is reference */
+
+Z_SET_ISREF_P(zv_ptr)       /* Set is_ref=1 */
+Z_UNSET_ISREF_P(zv_ptr)     /* Set is_ref=0 */
+
+Z_SET_ISREF_TO_P(zv_ptr, 1) /* Same as Z_SET_ISREF_P(zv_ptr) */
+Z_SET_ISREF_TO_P(zv_ptr, 0) /* Same as Z_UNSET_ISREF_P(zv_ptr) */
+```
 
 
