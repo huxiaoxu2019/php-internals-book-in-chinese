@@ -445,5 +445,25 @@ Z_SET_ISREF_TO_P(zv_ptr, 0) /* Same as Z_UNSET_ISREF_P(zv_ptr) */
         SEPARATE_ZVAL(ppzv);                \
         Z_SET_ISREF_PP((ppzv));             \
     }
-``
+```
+
+`SEPARATE_ZVAL_IF_NOT_REF()`宏经常用在根据时复制机制，修改一个`zval`的场景。`SEPARATE_ZVAL_TO_MAKE_IS_REF()`用在将一个`zval`变成引用的场景下，比如引用赋值（by-reference assignment）或者引用参数传递（by-reference argument pass）。后者主要用在引擎（engine）中，在扩展中很少使用。
+
+SEPARATE`家族里还有另外一个宏，它和其它宏有些不同：
+
+```c
+#define SEPARATE_ARG_IF_REF(varptr) \
+    if (PZVAL_IS_REF(varptr)) { \
+        zval *original_var = varptr; \
+        ALLOC_ZVAL(varptr); \
+        INIT_PZVAL_COPY(varptr, original_var); \
+        zval_copy_ctor(varptr); \
+    } else { \
+        Z_ADDREF_P(varptr); \
+    }
+```
+
+第一区别就是这个宏接受一个`zval*`参数而不是`zval**`。因此它并不能修改待分离的`zval*`变量。此外，这个宏仍会将引用计数（`refcount`），`SEPARATE_ZVAL`宏却不会。
+
+除此之外，它基本上补充了`SEPARATE_ZVAL_IF_NOT_REF()`宏：当`zval`是一个引用时分离将会发生。它主要用来确保传递到函数的参数是一个值，而非引用（译者注：此段不理解，抱歉）
 
