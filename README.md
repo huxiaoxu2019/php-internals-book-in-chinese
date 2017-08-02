@@ -76,8 +76,8 @@ This part concerns only the PHP 7 branch. It is under development.
      - Persistent resources
    - HashTables: zend_array
    - Functions: zend_function
- - Extensions design
-   - Learning the PHP lifecycle
+ - [扩展设计](https://github.com/GenialX/php-internals-book-in-chinese/blob/master/php7/extensions_design.md)
+   - Learning the PHP lifecycle
      - The parallelism models
      - The PHP extensions hooks
      - Hooking by overwritting function pointers
