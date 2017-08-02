@@ -4,6 +4,6 @@ Zend引擎是实现PHP的一些列组件。其中Zend虚拟机是其中最重要
 
 内容：
 
-Zend 编译器
-Zend 执行器
-Zend OPCache
+ - Zend 编译器
+ - Zend 执行器
+ - Zend OPCache
