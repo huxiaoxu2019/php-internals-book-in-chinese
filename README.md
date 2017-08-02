@@ -118,7 +118,7 @@ This part concerns only the PHP 7 branch. It is under development.
      - Memory leak detection example
      - Buffer overflow/underflow detection
      - Conclusions
- - Zend engine
+ - [Zend engine](https://github.com/GenialX/php-internals-book-in-chinese/blob/master/php7/zend_engine.md) 
    - Zend Compiler
    - Zend Executor
    - Zend OPCache
