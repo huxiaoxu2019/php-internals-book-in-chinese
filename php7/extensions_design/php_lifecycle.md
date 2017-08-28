@@ -39,5 +39,43 @@ PHP启动。如果是以`CLI`或`FPM`方式运行，那么将会调用C的`main(
 >
 > 作为一名扩展开发者，PHP多进程模块并不是你的菜。因为你将不得不处理你的模块如何在多线程环境中运行的问题，尤其是在Windows平台下。
 
+## PHP扩展钩子（hooks）
+
+也许你已经猜到了，PHP引擎会将你的扩展注册（trigger）在一生命周期的节点上。我们称它们是`hook`函数。你的扩展可以在注册引擎时，通过声明`hook`（钩子）函数，使其在某个特定的生命周期节点上生效。
+
+如果你见过PHP的扩展结构体源码，那么会很容易发现这些`hooks`，如下面的`zend_module_entry`结构体：
+
+```c
+struct _zend_module_entry {
+        unsigned short size;
+        unsigned int zend_api;
+        unsigned char zend_debug;
+        unsigned char zts;
+        const struct _zend_ini_entry *ini_entry;
+        const struct _zend_module_dep *deps;
+        const char *name;
+        const struct _zend_function_entry *functions;
+        int (*module_startup_func)(INIT_FUNC_ARGS);        /* MINIT() */
+        int (*module_shutdown_func)(SHUTDOWN_FUNC_ARGS);   /* MSHUTDOWN() */
+        int (*request_startup_func)(INIT_FUNC_ARGS);       /* RINIT() */
+        int (*request_shutdown_func)(SHUTDOWN_FUNC_ARGS);  /* RSHUTDOWN() */
+        void (*info_func)(ZEND_MODULE_INFO_FUNC_ARGS);     /* PHPINFO() */
+        const char *version;
+        size_t globals_size;
+#ifdef ZTS
+        ts_rsrc_id* globals_id_ptr;
+#else
+        void* globals_ptr;
+#endif
+        void (*globals_ctor)(void *global);                /* GINIT() */
+        void (*globals_dtor)(void *global);                /* GSHUTDOWN */
+        int (*post_deactivate_func)(void);                 /* PRSHUTDOWN() */
+        int module_started;
+        unsigned char type;
+        void *handle;
+        int module_number;
+        const char *build_id;
+};
+```
 
 
