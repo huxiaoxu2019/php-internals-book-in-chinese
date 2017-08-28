@@ -12,3 +12,17 @@ PHP启动。如果是以`CLI`或`FPM`方式运行，那么将会调用C的`main(
 
 下图即可描述上述的步骤：
 
+<img src="http://www.phpinternalsbook.com/_images/php_classic_lifetime.png"/>
+
+## 并行模型
+
+在CLI环境中，情况会很简单：一个PHP进程处理一个请求：他会启动一个独立的PHP脚本，然后结束。CLI环境是Web环境的一个特例，Web环境会负责得多。
+
+为了并行处理多个PHP请求，需要以并行模式来运行。下面有两种用PHP实现的方式。
+
+ - 基于进程
+ - 基于线程
+ 
+ 如果使用基于进程模型的方式，那么系统将分配给每个进程一个独立的解锁器。这种模型在Unix系统中很普遍。每一个请求在都各种进程中处理。PHP-CLI，PHP-FPM和PHP-CGI就是使用的这种模式。
+ 
+ 
