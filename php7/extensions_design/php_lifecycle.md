@@ -27,3 +27,18 @@ PHP启动。如果是以`CLI`或`FPM`方式运行，那么将会调用C的`main(
  
 同样的，基于线程模型的情况下，通过线程库，使每一个线程中拥有一个独立的PHP解释器。这种模型主要用于微软系统中，当然Unixes系列系统也可以。此时，要求PHP和扩展以ZTS（线程安全）的模式构建。
 
+进程模型：
+
+<img src="http://www.phpinternalsbook.com/_images/php_lifetime_process.png"/>
+
+线程模型：
+
+<img src="http://www.phpinternalsbook.com/_images/php_lifetime_thread.png"/>
+
+```
+注意
+
+作为一名扩展开发者，PHP多进程模块并不是你的菜。因为你将不得不处理你的模块如何在多线程环境中运行的问题，尤其是在Windows平台下。
+```
+
+
